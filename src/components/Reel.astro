@@ -1,0 +1,284 @@
+---
+// 02. Vídeos horizontales — mosaico "bento" dinámico, dividido en Gaming y Dance.
+// Todas las piezas son 16:9 (gap 0: cualquier gutter rompería el 16:9 de la pieza grande).
+// Gaming: principal + 2 a la derecha + 3 abajo (6 piezas). Dance: principal + 2 a la
+// derecha (3 piezas, sin fila inferior). El principal ROTA de a uno por el orden de
+// prioridad, así cada vídeo llega a ser principal. Al deslizar, animación FLIP (cada
+// pieza viaja de su lugar viejo al nuevo). Reproducción inline (fachada de YouTube).
+// La interacción (bento dinámico + rotación + FLIP + reproducción) vive en la island
+// de React `ReelGallery`, animada con Framer Motion (`layout` + AnimatePresence).
+import ReelGallery from './ReelGallery.tsx';
+import TypeIn from './TypeIn.tsx';
+
+const videos = [
+	{ id: 'NCRTLhsGVkI', title: 'Minecraft · Terror', cat: 'gaming' },
+	{ id: 'FTM6DLX-Msk', title: 'Roblox · Roba un Brainrot', cat: 'gaming' },
+	{ id: 'z_mNlHHB4zA', title: 'Minecraft · Terror', cat: 'gaming' },
+	{ id: 'dNI9gHGqHH0', title: 'Geometry Dash · Demon', cat: 'gaming' },
+	{ id: 'xKFVzXGyjyo', title: 'FNAF en Roblox · Terror', cat: 'gaming' },
+	{ id: 'iyNnoy98U3k', title: 'Fortnite · Shooter', cat: 'gaming' },
+	{ id: 'ljYLy8snNms', title: 'Minecraft · Terror', cat: 'gaming' },
+	{ id: 'Jk9_gxHhaMg', title: 'Minecraft · Terror', cat: 'gaming' },
+	{ id: 'ndOaql8ZLS0', title: 'Fortnite · Shooter', cat: 'gaming' },
+	{ id: 'epgvfZ7uHw8', title: 'aespa · Whiplash', cat: 'dance' },
+	{ id: 'ACdOTIGgnEU', title: 'Close Your Eyes · Colab K-pop', cat: 'dance' },
+	{ id: 'jaJlSKZt9FI', title: 'ATEEZ · Ice on My Teeth', cat: 'dance' },
+	{ id: 'j_O69Z_Rfg4', title: 'KATSEYE · Pinky Up', cat: 'dance' },
+];
+
+type Vid = { id: string; title: string; cat: string };
+const gaming = videos.filter((v) => v.cat === 'gaming');
+const dance = videos.filter((v) => v.cat === 'dance');
+const groups: { key: string; label: string; items: Vid[] }[] = [
+	{ key: 'gaming', label: 'GAMING', items: gaming },
+	{ key: 'dance', label: 'DANCE · K-POP', items: dance },
+];
+
+---
+
+<div id="reel" style="position:relative;margin-top:62px;">
+	<div class="reel-head">
+		<TypeIn client:visible as="h2" text="02. VÍDEOS HORIZONTALES" />
+		<span class="reel-line"></span>
+	</div>
+
+	<div data-reveal="fade">
+		<ReelGallery
+			client:visible
+			groups={groups.map((g) => ({
+				key: g.key,
+				label: g.label,
+				items: g.items.map((v) => ({ id: v.id, title: v.title })),
+			}))}
+		/>
+	</div>
+</div>
+
+<!-- Estilos GLOBALes (prefijados con #reel): las piezas se reconstruyen en runtime al
+     deslizar, así que un <style> scoped no las alcanzaría (data-astro-cid). -->
+<style is:global>
+	#reel .reel-head {
+		display: flex;
+		align-items: center;
+		gap: 22px;
+		margin-bottom: 26px;
+	}
+	#reel .reel-head h2 {
+		margin: 0;
+		font-weight: 600;
+		font-size: 25px;
+		letter-spacing: 1px;
+		white-space: nowrap;
+	}
+	#reel .reel-line {
+		flex: 1;
+		height: 1px;
+		background: rgba(255, 255, 255, 0.22);
+	}
+
+	#reel .reel-group {
+		margin-bottom: 36px;
+	}
+	#reel .reel-group:last-child {
+		margin-bottom: 0;
+	}
+	#reel .reel-group-head {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-family: 'Space Mono', monospace;
+		font-size: 12px;
+		letter-spacing: 2px;
+		color: #d8d6d0;
+		margin-bottom: 12px;
+	}
+	#reel .reel-dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		flex: none;
+	}
+	#reel .reel-dot.cat-gaming {
+		background: #cf2e2e;
+	}
+	#reel .reel-dot.cat-dance {
+		background: #7c4dd6;
+	}
+	#reel .reel-count {
+		font-size: 10px;
+		color: #7a7873;
+		letter-spacing: 1px;
+	}
+
+	#reel .reel-mosaic-wrap {
+		position: relative;
+	}
+	#reel .reel-mosaic {
+		display: grid;
+		gap: 10px;
+		/* contexto de posicionamiento para las piezas que Framer Motion "popea"
+		   (position:absolute) al salir/entrar con mode="popLayout". */
+		position: relative;
+		grid-template-columns: repeat(3, 1fr);
+		/* alto de fila = ancho de columna × 9/16 → piezas 1×1 EXACTAS a 16:9.
+		   La principal (2×2) queda a ~1.4% del 16:9 por absorber un gap: imperceptible. */
+		grid-auto-rows: 150.75px;
+		touch-action: pan-y;
+		user-select: none;
+	}
+	#reel .reel-mosaic[data-count='6'] {
+		grid-template-areas:
+			'main main v2'
+			'main main v3'
+			'v4 v5 v6';
+	}
+	#reel .reel-mosaic[data-count='3'] {
+		grid-template-areas:
+			'main main v2'
+			'main main v3';
+	}
+	#reel .reel-mosaic[data-count='2'] {
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-areas: 'main v2';
+	}
+	#reel .reel-mosaic[data-count='1'] {
+		grid-template-columns: 1fr;
+		grid-template-areas: 'main';
+	}
+
+	#reel .reel-tile {
+		position: relative;
+		/* alto definido por la grilla (grid-auto-rows en .reel-mosaic) */
+		min-width: 0;
+		min-height: 0;
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		background: transparent;
+		border: 0;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+		transform-origin: top left; /* para el cálculo del FLIP (Framer Motion layout) */
+	}
+	/* La "tarjeta" visible: llena la celda y ES la que escala en hover (desde su
+	   centro, sin layout → crece simétrico ~6px/lado, dentro del gap, sin pisar). */
+	#reel .reel-tile-inner {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: #0e0e0f;
+	}
+	#reel .reel-tile:focus-visible {
+		outline: 2px solid #cf2e2e;
+		outline-offset: -2px;
+		z-index: 4;
+	}
+	#reel .reel-timg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		filter: grayscale(1);
+		transition: filter 0.45s ease;
+		pointer-events: none;
+	}
+	#reel .reel-tile:hover .reel-timg {
+		filter: grayscale(0);
+	}
+	#reel .reel-tplay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		background: rgba(0, 0, 0, 0.22);
+		transition: opacity 0.3s ease;
+		z-index: 2;
+		pointer-events: none;
+	}
+	#reel .reel-tile:hover .reel-tplay {
+		opacity: 1;
+	}
+	#reel .reel-tile.is-main .reel-tplay svg {
+		width: 56px;
+		height: 56px;
+	}
+	#reel .reel-ttitle {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 3;
+		padding: 22px 11px 9px;
+		font-weight: 600;
+		font-size: 12px;
+		line-height: 1.2;
+		color: #f0eee8;
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.35) 55%, transparent);
+		pointer-events: none;
+	}
+	#reel .reel-tile.is-main .reel-ttitle {
+		font-size: 16px;
+		padding: 32px 15px 13px;
+	}
+	#reel .reel-tile.playing {
+		cursor: default;
+	}
+	#reel .reel-tile.playing .reel-timg,
+	#reel .reel-tile.playing .reel-tplay,
+	#reel .reel-tile.playing .reel-ttitle {
+		opacity: 0;
+		visibility: hidden;
+	}
+	/* iframe de reproducción (ahora elemento de React, no inyectado en runtime) */
+	#reel .reel-iframe {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		display: block;
+		z-index: 6;
+		background: #000;
+	}
+
+	#reel .reel-nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 34px;
+		height: 60px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(12, 12, 13, 0.62);
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		color: #e6e4de;
+		cursor: pointer;
+		z-index: 6;
+		transition:
+			background-color 0.25s ease,
+			border-color 0.25s ease;
+	}
+	#reel .reel-nav:hover {
+		background: rgba(12, 12, 13, 0.92);
+		border-color: rgba(255, 255, 255, 0.5);
+	}
+	#reel .reel-nav.prev {
+		left: -44px;
+	}
+	#reel .reel-nav.next {
+		right: -44px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		#reel .reel-tile {
+			transition: none;
+		}
+	}
+</style>

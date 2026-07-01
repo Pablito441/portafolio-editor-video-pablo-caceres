@@ -1,0 +1,969 @@
+---
+// 01. Vídeos verticales — self-hosted (public/videos), divididos en dos carruseles: Gaming y Dance.
+// Cada tarjeta muestra un póster liviano; el vídeo se carga sólo al abrir el modal (preload diferido).
+// El modal reproduce el clip local + muestra info y los enlaces a cada plataforma original.
+// La interacción (coverflow + hover + arrastre + modal) vive en la island de React
+// `VerticalGallery`, animada con Framer Motion.
+import VerticalGallery from './VerticalGallery.tsx';
+import TypeIn from './TypeIn.tsx';
+
+type Cat = 'gaming' | 'dance';
+type Tier = 'compleja' | 'intermedia' | 'basica'; // nivel de edición
+type Platform = 'youtube' | 'tiktok' | 'instagram';
+interface Link {
+	platform: Platform;
+	url: string;
+	views?: string;
+}
+interface Vid {
+	slug: string; // basename del vídeo y del póster
+	title: string;
+	cat: Cat;
+	views?: string; // dato destacado (el más alto)
+	tier?: Tier; // nivel de edición (se asigna desde tierBySlug)
+	summary?: string; // formato / tipo de edición (una línea)
+	details?: string[]; // qué incluye la edición (técnicas, orden homogéneo)
+	links: Link[];
+}
+
+const videos: Vid[] = [
+	// ===== GAMING =====
+	{
+		slug: 'meccha-primera-partida', title: 'Meccha Chameleon · Primera Partida', cat: 'gaming',
+		summary: '3 capas (cámara + gameplay + relleno difuminado)',
+		details: [
+			'Cámara cuadrada con bordes',
+			'Gameplay centrado para esquivar los overlays de likes y comentarios',
+			'Título gancho con movimiento continuo',
+			'Gancho de apertura con flash, sonido llamativo y zoom de cámara con curvas de velocidad',
+			'Zooms suaves animados e instantáneos para mantener la atención',
+			'Momentos donde solo se ve el gameplay, sin cámara',
+			'Cambio a blanco y negro para intensificar escenas clave',
+			'Movimiento shake en sustos y gritos',
+			'Voz procesada (grave con reverb) en momentos especiales',
+			'Transiciones flash con efectos de sonido',
+			'Contador de tiempo restante incrustado (gameplay recortado, con sombra, entrada animada y curvas de velocidad)',
+			'Deformación de escala en cámara y gameplay',
+			'Clips externos de intermisión de TV para separar las partes',
+			'Música de fondo para reforzar el ambiente',
+			'Efectos de sonido',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/95yY8Aue83o' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7656493164361993490' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DaIxTSSxxLq/' },
+		],
+	},
+	{
+		slug: 'meccha-blanconegro', title: 'Meccha Chameleon · Blanco y Negro', cat: 'gaming',
+		summary: '3 capas (cámara + gameplay + relleno difuminado)',
+		details: [
+			'Cámara cuadrada',
+			'Título gancho con movimiento continuo',
+			'Gancho de apertura con flash, sonido llamativo y zoom de cámara con curvas de velocidad',
+			'Zooms suaves animados e instantáneos para mantener la atención',
+			'Momentos donde solo se ve el gameplay, sin cámara',
+			'Cambio a blanco y negro para intensificar escenas clave',
+			'Movimiento shake en sustos y gritos',
+			'Voz procesada (grave con reverb) en momentos especiales',
+			'Transiciones flash con efectos de sonido',
+			'Contador de tiempo restante incrustado (gameplay recortado, con sombra, entrada animada y curvas de velocidad)',
+			'Música de fondo para reforzar el ambiente',
+			'Efectos de sonido',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/pKrzUMtfGKY' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7656933162362227976' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DaL157gpL6C/' },
+		],
+	},
+	{
+		slug: 'roblox-real-rampage', title: 'Roblox · Real Rampage Calavera', cat: 'gaming', views: '1.6M',
+		summary: '2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho',
+			'Cambio a blanco y negro y viñeta en escenas clave',
+			'Momentos donde solo se ve el gameplay, sin cámara',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Imágenes agregadas (calaveras) sobre la acción',
+			'Música de fondo para reforzar el ambiente',
+			'Efectos de sonido',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7548634654681664774', views: '1.6M' },
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/JD0sGbDgktI' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DOcYVKQCUA9/' },
+		],
+	},
+	{
+		slug: 'minecraft-sonidos-raros', title: 'Minecraft · Sonidos Raros', cat: 'gaming', views: '140K',
+		summary: '2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho con voz IA',
+			'Momentos donde solo se ve el gameplay, sin cámara',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Emojis',
+		],
+		links: [
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7423225224126041350', views: '140K' },
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/aEwLqnn-YnI', views: '14K' },
+		],
+	},
+	{
+		slug: 'roblox-brainrot-base', title: 'Roblox · Roba un Brainrot (Base)', cat: 'gaming', views: '62K',
+		summary: 'Resumen de video largo · 2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Intro gancho dedicada y animada: título e imágenes con zooms suaves, entradas soft y curvas de velocidad (algunas imágenes solo con sonido)',
+			'Cambio a blanco y negro para intensificar escenas clave',
+			'Momentos donde solo se ve el gameplay, sin cámara',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Música de fondo para reforzar el ambiente',
+			'Efectos de sonido',
+			'Subtítulos',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DO2DGAYCdya/', views: '62K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7552332116055313676' },
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/v0bvH_qHTZA' },
+		],
+	},
+	{
+		slug: 'roblox-ink-heroe', title: 'Roblox · Ink — Quiero ser un Héroe', cat: 'gaming', views: '43K',
+		summary: 'Clip corto · 2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zoom instantáneo para dar impacto',
+			'Música de fondo para reforzar el ambiente',
+			'Efectos de sonido',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/cAvfiFqZa5k', views: '43K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7554187105954516280' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/bliuskii/reel/DPC5Y2wCTou/', views: '11K' },
+		],
+	},
+	{
+		slug: 'roblox-fnaf-karma', title: 'Roblox · FNAF Karma', cat: 'gaming', views: '22K',
+		summary: '2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Voz procesada (grave, a baja velocidad) en momentos especiales',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/iCiIFrvMZyc', views: '22K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7583340886898101522' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DSNM-PoERmh/' },
+		],
+	},
+	{
+		slug: 'roblox-fnaf-susto', title: 'Roblox · FNAF Susto', cat: 'gaming', views: '20K',
+		summary: '2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zooms instantáneos para dar impacto',
+			'Manejo de velocidad del video para marcar los sustos',
+			'Voz procesada (grave con reverb) en momentos especiales',
+			'Música de fondo para reforzar el ambiente',
+			'Efectos de sonido',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/OmoM1Wk3hMg', views: '20K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7581579630834994450' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DSA9AcjCfoX/', views: '12K' },
+		],
+	},
+	{
+		slug: 'roblox-brainrot-lucky', title: 'Roblox · Roba un Brainrot (Lucky Blocks)', cat: 'gaming', views: '19K',
+		summary: 'Resumen de video largo · 2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Música de fondo para reforzar el ambiente',
+			'Subtítulos en todo el video',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DO_4XvnCbJL/', views: '19K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7553750713944378635' },
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/Y9wEC8dz8l0' },
+		],
+	},
+	{
+		slug: 'minecraft-pareja', title: 'Minecraft · Pareja', cat: 'gaming', views: '15K',
+		summary: '2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Imágenes, videos y memes representativos',
+			'Música de fondo y efectos de sonido',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/tzt5SMWX6v0', views: '15K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7595363976129694984' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/bliuskii/reel/DTgnqPbCUwi/' },
+		],
+	},
+	{
+		slug: 'minecraft-ratero', title: 'Minecraft · Ratero', cat: 'gaming', views: '10K',
+		summary: 'Clip simple · 2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/dacOh_PUt-4', views: '10K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7597204954742312200' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DTtYPYEiaUd/' },
+		],
+	},
+	{
+		slug: 'roblox-fnaf-coop', title: 'Roblox · FNAF Co-op', cat: 'gaming',
+		summary: '2 capas (cámara + gameplay)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zooms lineales e instantáneos para mantener la atención',
+			'Voz procesada (grave con reverb) en momentos especiales',
+			'Manejo de velocidad del video para marcar los sustos',
+			'Música de fondo para reforzar el ambiente',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/YffOYXoPREE' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7581238253085330706' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/reel/DR-mvvnCTi3/' },
+		],
+	},
+	// ===== DANCE =====
+	{
+		slug: 'aura-jungkook', title: 'Aura · Laura — Jungkook', cat: 'dance', views: '960K',
+		summary: '3 capas (cámara + video + relleno difuminado)',
+		details: [
+			'Cámara rectangular',
+			'Título gancho estático',
+			'Zooms instantáneos en la cámara',
+			'Efectos de sonido',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'instagram', url: 'https://www.instagram.com/p/DR29LoQCY3U/', views: '960K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7580135713652444434', views: '806K' },
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/IzbxDzFEAtY' },
+		],
+	},
+	{
+		slug: 'festejo-entradas', title: 'Festejo de Entradas', cat: 'dance', views: '120K',
+		summary: '1 solo video',
+		details: [
+			'Título gancho',
+			'Pieza hecha a propósito para la ocasión',
+			'Sonido original, sin música agregada',
+		],
+		links: [
+			{ platform: 'instagram', url: 'https://www.instagram.com/p/DW1Xv8rERO0/', views: '120K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@bliuskii/video/7626020541857533202' },
+		],
+	},
+	{
+		slug: 'go-cortis', title: 'Go! · Cortis', cat: 'dance', views: '35K',
+		details: [
+			'Título gancho',
+			'Acomodo de cámara',
+			'Zooms lineales animados',
+			'Baile',
+			'Música de fondo',
+		],
+		links: [
+			{ platform: 'instagram', url: 'https://www.instagram.com/p/DTvonB4kU4n/', views: '35K' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@blittoodc/video/7597528110480821522' },
+		],
+	},
+	{
+		slug: 'do-it-straykids', title: 'Do It · Stray Kids', cat: 'dance',
+		details: [
+			'Título gancho con imágenes que representan la canción',
+			'Entradas y salidas de imágenes con animaciones y zooms suaves',
+			'Acomodo de cámara',
+			'Zooms lineales animados',
+			'Música de fondo',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/jc-saGLNoZE' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@blittoodc/video/7599085155478670600' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/p/DT6cNIWEZp3/' },
+		],
+	},
+	{
+		slug: 'super-seventeen', title: 'Comparación Super · Seventeen', cat: 'dance',
+		summary: 'Comparación de dos videos (presentación vs. ensayo)',
+		details: [
+			'Título gancho',
+			'Acomodo de cámara',
+			'Zooms lineales animados',
+			'Música de fondo',
+			'Datos y redes sociales del creador',
+		],
+		links: [
+			{ platform: 'youtube', url: 'https://www.youtube.com/shorts/FxIQQPd5qHs' },
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@blittoodc/video/7510004314308414776' },
+		],
+	},
+	{
+		slug: 'xikey-xikers', title: 'Comparación Xikey · Xikers', cat: 'dance',
+		summary: 'Comparación de dos videos (presentación vs. ensayo)',
+		details: [
+			'Título gancho animado con entradas y curvas de velocidad',
+			'Acomodo de cámara',
+			'Música de fondo',
+		],
+		links: [
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@blittoodc/video/7653903788230642962' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/p/DZ55A-yxXnV/' },
+		],
+	},
+	{
+		slug: 'fancam-xikers', title: 'Fancam Xikey · Xikers', cat: 'dance',
+		details: [
+			'Título gancho',
+			'Acomodo de cámara con trackeo de la persona',
+			'Zooms lineales animados',
+			'Música de fondo',
+		],
+		links: [
+			{ platform: 'tiktok', url: 'https://www.tiktok.com/@blittoodc/video/7652474538260794642' },
+			{ platform: 'instagram', url: 'https://www.instagram.com/p/DZs6mbmRhFQ/' },
+		],
+	},
+];
+
+// Nivel de edición por vídeo (se fusiona en cada Vid abajo, así no hay que
+// repetir el campo en cada objeto).
+const tierBySlug: Record<string, Tier> = {
+	// Compleja
+	'meccha-primera-partida': 'compleja',
+	'meccha-blanconegro': 'compleja',
+	'roblox-brainrot-base': 'compleja',
+	'fancam-xikers': 'compleja',
+	// Intermedia
+	'minecraft-sonidos-raros': 'intermedia',
+	'minecraft-pareja': 'intermedia',
+	'roblox-fnaf-coop': 'intermedia',
+	'roblox-fnaf-karma': 'intermedia',
+	'roblox-fnaf-susto': 'intermedia',
+	'roblox-ink-heroe': 'intermedia',
+	'roblox-real-rampage': 'intermedia',
+	'roblox-brainrot-lucky': 'intermedia',
+	'aura-jungkook': 'intermedia',
+	'super-seventeen': 'intermedia',
+	'xikey-xikers': 'intermedia',
+	'do-it-straykids': 'intermedia',
+	// Básica
+	'minecraft-ratero': 'basica',
+	'festejo-entradas': 'basica',
+	'go-cortis': 'basica',
+};
+
+const withTier: Vid[] = videos.map((v) => ({ ...v, tier: tierBySlug[v.slug] }));
+const gaming = withTier.filter((v) => v.cat === 'gaming');
+const dance = withTier.filter((v) => v.cat === 'dance');
+const groups = [
+	{ key: 'gaming' as Cat, label: 'GAMING', items: gaming },
+	{ key: 'dance' as Cat, label: 'DANCE', items: dance },
+];
+---
+
+<div id="vertical" style="position:relative;margin-top:34px;">
+	<div style="display:flex;align-items:center;gap:22px;margin-bottom:26px;">
+		<TypeIn
+			client:visible
+			text="01. VÍDEOS VERTICALES"
+			style={{ margin: 0, fontWeight: 600, fontSize: '25px', letterSpacing: '1px', whiteSpace: 'nowrap' }}
+		/>
+		<span style="flex:1;height:1px;background:rgba(255,255,255,.22);"></span>
+	</div>
+
+	<div data-reveal="fade">
+		<VerticalGallery client:visible groups={groups} />
+	</div>
+</div>
+
+<!-- Estilos GLOBALes: la island de React no recibe el data-astro-cid del scope,
+     así que sus clases (.vt-*) deben declararse globales para que apliquen. -->
+<style is:global>
+	.vt-group {
+		margin-bottom: 30px;
+	}
+	.vt-group-head {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-family: 'Space Mono', monospace;
+		font-size: 12px;
+		letter-spacing: 2px;
+		color: #d8d6d0;
+		margin-bottom: 8px;
+	}
+	.vt-dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		flex: none;
+	}
+	.vt-dot.cat-gaming {
+		background: #cf2e2e;
+	}
+	.vt-dot.cat-dance {
+		background: #7c4dd6;
+	}
+	.vt-count {
+		font-size: 10px;
+		color: #7a7873;
+		letter-spacing: 1px;
+	}
+
+	/* ===== Coverflow: 3 piezas en foco + 2 por detrás a cada lado ===== */
+	.vt-coverflow {
+		position: relative;
+		height: 348px;
+		margin-top: 4px;
+		/* deja asomar las piezas de atrás por los costados */
+		overflow: visible;
+		touch-action: pan-y;
+		user-select: none;
+	}
+	.vt-card {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 188px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		font: inherit;
+		color: inherit;
+		text-align: left;
+		background: #0e0e0f;
+		cursor: pointer;
+		transform-origin: center center;
+		box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
+		/* Posición/escala/opacidad las controla Framer Motion (motion values);
+		   sólo el filtro de enfoque sigue siendo una transición CSS. */
+		transition: filter 0.55s ease;
+	}
+	.vt-card:focus-visible {
+		outline: 2px solid #cf2e2e;
+		outline-offset: 2px;
+	}
+	/* Las piezas que NO están en foco se ven más apagadas (refuerza el enfoque). */
+	.vt-card:not(.is-focus) {
+		filter: brightness(0.6) saturate(0.55);
+	}
+	.vt-card:not(.is-focus) .vt-meta {
+		opacity: 0;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.vt-card {
+			transition: none;
+		}
+	}
+	.vt-thumb {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 9 / 16;
+		overflow: hidden;
+		background: #0e0e0f;
+		display: block;
+	}
+	.vt-thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		filter: grayscale(1);
+		transition: filter 0.45s ease;
+	}
+	.vt-card:hover .vt-thumb img {
+		filter: grayscale(0);
+	}
+
+	/* Barra de acento por categoría */
+	.vt-thumb::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		height: 3px;
+		z-index: 3;
+	}
+	.vt-thumb.cat-gaming::after {
+		background: #cf2e2e;
+	}
+	.vt-thumb.cat-dance::after {
+		background: #7c4dd6;
+	}
+
+	.vt-play {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		background: rgba(0, 0, 0, 0.22);
+		transition: opacity 0.3s ease;
+		z-index: 2;
+	}
+	.vt-card:hover .vt-play {
+		opacity: 1;
+	}
+
+	.vt-meta {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 3;
+		padding: 26px 10px 11px;
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.35) 55%, transparent);
+		transition: opacity 0.4s ease;
+	}
+	.vt-title {
+		font-weight: 600;
+		font-size: 12px;
+		line-height: 1.22;
+		color: #f0eee8;
+		margin-bottom: 4px;
+	}
+	.vt-views {
+		font-family: 'Space Mono', monospace;
+		font-size: 9px;
+		letter-spacing: 0.3px;
+		color: rgba(240, 238, 232, 0.82);
+	}
+	/* Chip de nivel de edición: pequeño, en la esquina del póster, con un filo
+	   de color por nivel. Se atenúa junto a la tarjeta cuando no está en foco. */
+	.vt-tier-tag {
+		position: absolute;
+		top: 9px;
+		right: 9px;
+		z-index: 3;
+		font-family: 'Space Mono', monospace;
+		font-size: 8px;
+		letter-spacing: 1px;
+		line-height: 1;
+		padding: 3px 6px;
+		text-transform: uppercase;
+		color: #ece9e2;
+		background: rgba(8, 8, 10, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-left-width: 2px;
+		pointer-events: none;
+	}
+	.vt-tier-tag.tier-compleja {
+		border-left-color: #e8c36b;
+	}
+	.vt-tier-tag.tier-intermedia {
+		border-left-color: #9fb4d8;
+	}
+	.vt-tier-tag.tier-basica {
+		border-left-color: #9a9892;
+	}
+
+	.vt-nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 32px;
+		height: 56px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(12, 12, 13, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		color: #e6e4de;
+		cursor: pointer;
+		z-index: 4;
+		transition:
+			background-color 0.25s ease,
+			border-color 0.25s ease;
+	}
+	.vt-nav:hover {
+		background: rgba(12, 12, 13, 0.92);
+		border-color: rgba(255, 255, 255, 0.5);
+	}
+	.vt-nav.prev {
+		left: -44px;
+	}
+	.vt-nav.next {
+		right: -44px;
+	}
+
+	/* ===== Modal ===== */
+	.vt-modal {
+		position: fixed;
+		inset: 0;
+		z-index: 999;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 24px;
+	}
+	.vt-modal[hidden] {
+		display: none;
+	}
+	.vt-modal-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(6, 6, 8, 0.86);
+		backdrop-filter: blur(4px);
+	}
+	.vt-modal-dialog {
+		position: relative;
+		display: flex;
+		gap: 0;
+		max-width: 820px;
+		width: 100%;
+		max-height: 88vh;
+		background: #121214;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+		animation: vt-pop 0.28s ease;
+	}
+	@keyframes vt-pop {
+		from {
+			opacity: 0;
+			transform: translateY(14px) scale(0.98);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	.vt-modal-player {
+		flex: none;
+		background: #000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.vt-modal-player video {
+		display: block;
+		height: 84vh;
+		max-height: 84vh;
+		width: auto;
+		max-width: 100%;
+		aspect-ratio: 9 / 16;
+		background: #000;
+	}
+	.vt-modal-side {
+		flex: 1;
+		min-width: 0;
+		padding: 30px 26px;
+		display: flex;
+		flex-direction: column;
+		overflow-y: auto;
+		/* Firefox: barra fina y oculta por defecto (transparente). */
+		scrollbar-width: thin;
+		scrollbar-color: transparent transparent;
+		transition: scrollbar-color 0.3s ease;
+	}
+	.vt-modal-side.is-scrolling,
+	.vt-modal-side:hover {
+		scrollbar-color: rgba(240, 238, 232, 0.32) transparent;
+	}
+	/* WebKit/Chrome: pista transparente y pulgar que sólo asoma al scrollear/hover. */
+	.vt-modal-side::-webkit-scrollbar {
+		width: 6px;
+	}
+	.vt-modal-side::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.vt-modal-side::-webkit-scrollbar-thumb {
+		background: transparent;
+		border-radius: 0;
+		transition: background-color 0.3s ease;
+	}
+	.vt-modal-side.is-scrolling::-webkit-scrollbar-thumb,
+	.vt-modal-side:hover::-webkit-scrollbar-thumb {
+		background: rgba(240, 238, 232, 0.32);
+	}
+	/* Fila de etiquetas del modal: categoría (rellena) + nivel de edición (contorno). */
+	.vt-modal-tags {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 16px;
+	}
+	.vt-modal-cat {
+		font-family: 'Space Mono', monospace;
+		font-size: 10px;
+		letter-spacing: 2.5px;
+		padding: 4px 10px;
+		align-self: flex-start;
+		color: #fff;
+	}
+	.vt-modal-tier {
+		font-family: 'Space Mono', monospace;
+		font-size: 10px;
+		letter-spacing: 2px;
+		padding: 4px 10px;
+		border: 1px solid;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+	.vt-modal-tier.tier-compleja {
+		color: #e8c36b;
+		border-color: rgba(232, 195, 107, 0.5);
+	}
+	.vt-modal-tier.tier-intermedia {
+		color: #9fb4d8;
+		border-color: rgba(159, 180, 216, 0.5);
+	}
+	.vt-modal-tier.tier-basica {
+		color: #b8b6b0;
+		border-color: rgba(184, 182, 176, 0.45);
+	}
+	.vt-modal-cat.cat-gaming {
+		background: rgba(207, 46, 46, 0.85);
+	}
+	.vt-modal-cat.cat-dance {
+		background: rgba(124, 77, 214, 0.85);
+	}
+	.vt-modal-title {
+		margin: 0 0 10px;
+		font-weight: 600;
+		font-size: 22px;
+		line-height: 1.18;
+		color: #f0eee8;
+	}
+	.vt-modal-views {
+		font-family: 'Space Mono', monospace;
+		font-size: 12px;
+		letter-spacing: 0.5px;
+		color: #b6b4ae;
+		margin-bottom: 20px;
+	}
+	/* Línea de formato/tipo de edición (una sola línea, tono mono como los views). */
+	.vt-modal-summary {
+		font-family: 'Space Mono', monospace;
+		font-size: 11px;
+		line-height: 1.45;
+		letter-spacing: 0.3px;
+		color: #c9b27a;
+		padding-bottom: 18px;
+		margin-bottom: 20px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	/* Lista de técnicas de edición: viñeta con el color de acento de la categoría. */
+	.vt-modal-details {
+		list-style: none;
+		margin: 0 0 26px;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 9px;
+	}
+	.vt-modal-details li {
+		position: relative;
+		padding-left: 18px;
+		font-size: 13px;
+		line-height: 1.4;
+		color: #c8c6c0;
+	}
+	.vt-modal-details li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 7px;
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #cf2e2e;
+	}
+	.vt-modal-details.cat-gaming li::before {
+		background: #cf2e2e;
+	}
+	.vt-modal-details.cat-dance li::before {
+		background: #7c4dd6;
+	}
+	.vt-modal-links-label {
+		font-family: 'Space Mono', monospace;
+		font-size: 9px;
+		letter-spacing: 2px;
+		color: #86847f;
+		margin-bottom: 12px;
+	}
+	.vt-modal-links {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	/* Los botones .vt-link se crean en runtime (JS), así que sus estilos van en el
+	   bloque <style is:global> de más abajo: una clase scoped no los alcanzaría. */
+	/* Flechas para saltar al vídeo anterior/siguiente sin cerrar el modal.
+	   Mismo lenguaje que las flechas del carrusel; se apoyan en los costados. */
+	.vt-modal-nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 44px;
+		height: 62px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(12, 12, 13, 0.7);
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		color: #e6e4de;
+		cursor: pointer;
+		z-index: 3;
+		transition:
+			background-color 0.25s ease,
+			border-color 0.25s ease;
+	}
+	.vt-modal-nav:hover {
+		background: rgba(12, 12, 13, 0.95);
+		border-color: rgba(255, 255, 255, 0.6);
+	}
+	.vt-modal-nav.prev {
+		left: 24px;
+	}
+	.vt-modal-nav.next {
+		right: 24px;
+	}
+	.vt-modal-x {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		z-index: 5;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.5);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: #f0eee8;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease;
+	}
+	.vt-modal-x:hover {
+		background: rgba(0, 0, 0, 0.8);
+		border-color: #f0eee8;
+	}
+
+	@media (max-width: 720px) {
+		.vt-modal-dialog {
+			flex-direction: column;
+			max-height: 92vh;
+			overflow-y: auto;
+		}
+		.vt-modal-player video {
+			height: auto;
+			width: 100%;
+			max-height: 60vh;
+		}
+		.vt-modal-side {
+			padding: 20px;
+		}
+		.vt-modal-nav {
+			width: 38px;
+			height: 52px;
+		}
+		.vt-modal-nav.prev {
+			left: 4px;
+		}
+		.vt-modal-nav.next {
+			right: 4px;
+		}
+	}
+</style>
+
+<!-- Estilos GLOBALes de los botones de red social del modal: se inyectan en runtime,
+     por eso no pueden ir en el <style> scoped (no llevarían el data-astro-cid). -->
+<style is:global>
+	/* Enlaces a plataformas: mismo lenguaje que los botones del hero (.dc-btn):
+	   esquinas rectas, borde fino y relleno invertido (crema) al pasar el cursor.
+	   El único distintivo por red es el filo izquierdo con su color de marca. */
+	#vt-modal-links .vt-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 14px;
+		padding: 14px 16px;
+		border: 1px solid rgba(255, 255, 255, 0.55);
+		border-left-width: 3px;
+		background: transparent;
+		color: #f0eee8;
+		text-decoration: none;
+		transition:
+			background-color 0.3s ease,
+			color 0.3s ease,
+			border-color 0.3s ease,
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	#vt-modal-links .vt-link:hover {
+		background: #f0eee8;
+		color: #0c0c0d;
+		border-color: #f0eee8;
+		transform: translateY(-2px);
+		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+	}
+	#vt-modal-links .vt-link-name {
+		font-weight: 700;
+		font-size: 15px;
+		letter-spacing: 0.4px;
+	}
+	#vt-modal-links .vt-link-sub {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-family: 'Space Mono', monospace;
+		font-size: 11px;
+		font-weight: 400;
+		color: #86847f;
+		transition: color 0.3s ease;
+	}
+	#vt-modal-links .vt-link-sub svg {
+		display: block;
+		transition: transform 0.3s ease;
+	}
+	#vt-modal-links .vt-link:hover .vt-link-sub {
+		color: #45443f;
+	}
+	#vt-modal-links .vt-link:hover .vt-link-sub svg {
+		transform: translate(2px, -2px);
+	}
+	/* Filo izquierdo con el color de cada plataforma (se mantiene también en hover). */
+	#vt-modal-links .plat-youtube,
+	#vt-modal-links .plat-youtube:hover {
+		border-left-color: #ff0000;
+	}
+	#vt-modal-links .plat-tiktok,
+	#vt-modal-links .plat-tiktok:hover {
+		border-left-color: #25f4ee;
+	}
+	#vt-modal-links .plat-instagram,
+	#vt-modal-links .plat-instagram:hover {
+		border-left-color: #e1306c;
+	}
+</style>

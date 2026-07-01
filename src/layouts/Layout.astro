@@ -1,0 +1,277 @@
+---
+interface Props {
+	title?: string;
+}
+
+const { title = 'Pablo Cáceres — Editor & Filmmaker' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<script is:inline>document.documentElement.classList.add('js');</script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+	html {
+		scroll-behavior: smooth;
+		/* deja aire bajo la cabecera fija al saltar a una sección */
+		scroll-padding-top: 90px;
+	}
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	body {
+		background-color: #08080a;
+		background-image: url(/images/background.webp);
+		background-size: 100% auto;
+		background-position: top center;
+		background-repeat: repeat-y;
+		min-height: 100vh;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* ===== Botones CTA con borde ===== */
+	.dc-btn {
+		color: #f0eee8;
+		border: 1px solid rgba(255, 255, 255, 0.55);
+		text-decoration: none;
+		transition:
+			background-color 0.3s ease,
+			color 0.3s ease,
+			border-color 0.3s ease,
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	.dc-btn:hover {
+		background: #f0eee8;
+		color: #0c0c0d;
+		border-color: #f0eee8;
+		transform: translateY(-2px);
+		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+	}
+	.dc-btn svg line,
+	.dc-btn svg polyline {
+		transition: stroke 0.3s ease;
+	}
+	.dc-btn:hover svg line,
+	.dc-btn:hover svg polyline {
+		stroke: #0c0c0d;
+	}
+
+	/* ===== Navegación ===== */
+	.nav-link {
+		position: relative;
+		color: #cfcdc7;
+		text-decoration: none;
+		padding-bottom: 3px;
+		white-space: nowrap;
+		transition: color 0.25s ease;
+	}
+	.nav-link::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		height: 2px;
+		width: 0;
+		background: #f0eee8;
+		transition: width 0.28s ease;
+	}
+	.nav-link:hover,
+	.nav-link.active {
+		color: #f0eee8;
+	}
+	.nav-link:hover::after,
+	.nav-link.active::after {
+		width: 100%;
+	}
+
+	/* ===== Círculos de iconos (redes / contacto) ===== */
+	.icon-ring {
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition:
+			border-color 0.25s ease,
+			background-color 0.25s ease,
+			transform 0.25s ease;
+	}
+	.icon-ring:hover {
+		border-color: #f0eee8;
+		background: rgba(255, 255, 255, 0.08);
+		transform: translateY(-2px);
+	}
+
+	/* ===== Chips de herramientas (logos de apps) ===== */
+	.tool-chip {
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		/* el lift/scale del hover lo maneja Framer Motion (whileHover); acá sólo la sombra */
+		transition: box-shadow 0.25s ease;
+	}
+	.tool-chip img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		display: block;
+	}
+	.tool-chip:hover {
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+	}
+
+	/* ===== Tarjetas (vertical / reel) ===== */
+	.dc-card {
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		transition:
+			transform 0.3s ease,
+			border-color 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	.dc-card:hover {
+		transform: translateY(-6px);
+		border-color: rgba(255, 255, 255, 0.35);
+		box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+	}
+
+	/* ===== Enlace "VER TODOS" ===== */
+	.ver-todos {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		color: #bdbbb5;
+		text-decoration: none;
+		transition:
+			color 0.25s ease,
+			gap 0.25s ease;
+	}
+	.ver-todos:hover {
+		color: #f0eee8;
+		gap: 18px;
+	}
+	.ver-todos svg line,
+	.ver-todos svg polyline {
+		transition: stroke 0.25s ease;
+	}
+	.ver-todos:hover svg line,
+	.ver-todos:hover svg polyline {
+		stroke: #f0eee8;
+	}
+
+	/* ===== Items de contacto (links) ===== */
+	.contact-link {
+		display: flex;
+		align-items: center;
+		gap: 13px;
+		text-decoration: none;
+		color: inherit;
+		transition: transform 0.25s ease;
+	}
+	.contact-link:hover {
+		transform: translateX(4px);
+	}
+	.contact-link:hover .icon-ring {
+		border-color: #f0eee8;
+		background: rgba(255, 255, 255, 0.08);
+	}
+	.contact-val {
+		transition: color 0.25s ease;
+	}
+	.contact-link:hover .contact-val {
+		color: #fff;
+	}
+
+	/* ===== Reveal direccional al hacer scroll (solo con JS) =====
+	   Se aplica por atributo data-reveal sobre el propio elemento (sin envolverlo),
+	   así no altera layouts ni interfiere con los carruseles. */
+	.js [data-reveal] {
+		opacity: 0;
+		transition:
+			opacity 0.7s ease,
+			transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+		transition-delay: var(--reveal-delay, 0s);
+		will-change: opacity, transform;
+	}
+	.js [data-reveal='up'] {
+		transform: translateY(34px);
+	}
+	.js [data-reveal='down'] {
+		transform: translateY(-34px);
+	}
+	.js [data-reveal='left'] {
+		transform: translateX(-44px);
+	}
+	.js [data-reveal='right'] {
+		transform: translateX(44px);
+	}
+	.js [data-reveal='scale'] {
+		transform: scale(0.92);
+	}
+	.js [data-reveal='fade'] {
+		transform: none;
+	}
+	.js [data-reveal].is-visible {
+		opacity: 1;
+		transform: none;
+	}
+
+	/* Cursor del typewriter (componente TypeIn) */
+	.type-caret {
+		display: inline-block;
+		width: 2px;
+		height: 0.95em;
+		margin-left: 3px;
+		background: currentColor;
+		vertical-align: -0.08em;
+		animation: blink 0.9s steps(1, end) infinite;
+	}
+	@keyframes blink {
+		0%,
+		50% {
+			opacity: 1;
+		}
+		50.01%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+		/* Nota: NO desactivamos [data-reveal] aquí — Pablo quiere las animaciones de
+		   aparición/typewriter SIEMPRE visibles (igual que en Hero y Reel). */
+		[style*='animation:spin'] {
+			animation: none !important;
+		}
+	}
+</style>

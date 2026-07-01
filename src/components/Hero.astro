@@ -1,0 +1,13 @@
+---
+// Sección hero: ocupa toda la pantalla al cargar (sin asomar la sección siguiente)
+// y centra verticalmente su contenido. La animación de entrada (Framer Motion) vive
+// en la island `HeroContent` (client:load → corre en cada recarga).
+import HeroContent from './HeroContent.tsx';
+---
+
+<section
+	id="inicio"
+	style="position:relative;min-height:calc(100vh - 78px);display:flex;align-items:center;box-sizing:border-box;"
+>
+	<HeroContent client:load />
+</section>

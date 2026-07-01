@@ -1,0 +1,254 @@
+---
+// 04. Precios — tres tipos de edición (básica / intermedia / compleja) para formato
+// vertical y horizontal. Precios APROXIMADOS en USD; negociables; también en ARS al
+// cambio del día. Animaciones mínimas: título con typewriter + reveals + hover en paneles.
+import TypeIn from './TypeIn.tsx';
+
+type Tier = { name: string; color: string; desc: string };
+const tiers: Tier[] = [
+	{ name: 'Básica', color: '#9a988f', desc: 'Recortes, zooms y subtítulos.' },
+	{ name: 'Intermedia', color: '#cf2e2e', desc: 'Lo anterior + efectos visuales y diseño sonoro.' },
+	{
+		name: 'Compleja',
+		color: '#e8c36b',
+		desc: 'Lo anterior + motion graphics, rotoscopía, corrección de color y 3D.',
+	},
+];
+
+const vertical = [
+	{ name: 'Básica', color: '#9a988f', price: '$12' },
+	{ name: 'Intermedia', color: '#cf2e2e', price: '$20' },
+	{ name: 'Compleja', color: '#e8c36b', price: '$35' },
+];
+const horizontal = [
+	{ name: 'Básica', color: '#9a988f', per10: '$47', perMin: '$4,7' },
+	{ name: 'Intermedia', color: '#cf2e2e', per10: '$70', perMin: '$7' },
+	{ name: 'Compleja', color: '#e8c36b', per10: '$120', perMin: '$12' },
+];
+---
+
+<div id="precios" style="position:relative;margin-top:62px;">
+	<div style="display:flex;align-items:center;gap:22px;margin-bottom:16px;">
+		<TypeIn
+			client:visible
+			text="04. PRECIOS"
+			style={{
+				margin: '0',
+				fontWeight: '600',
+				fontSize: '25px',
+				letterSpacing: '1px',
+				whiteSpace: 'nowrap',
+			}}
+		/>
+		<span style="flex:1;height:1px;background:rgba(255,255,255,.22);"></span>
+		<span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#7a7873;white-space:nowrap;">
+			USD · ARS
+		</span>
+	</div>
+
+	<p class="pr-note" data-reveal="up">
+		Precios <b>aproximados</b> en dólares (USD). Siempre podemos llegar a un intermedio o
+		acuerdo, o armar una <b>promo por mes</b> según la edición y lo que necesites. Si sos de
+		Argentina, es el equivalente en <b>pesos (ARS)</b> al cambio del día — podés pagar de las
+		dos maneras.
+	</p>
+
+	<!-- Qué incluye cada tipo de edición (sobre un video de ~10 min) -->
+	<div class="pr-defs" data-reveal="up" style="--reveal-delay:.08s;">
+		<div class="pr-defs-label">QUÉ INCLUYE CADA EDICIÓN · SOBRE UN VIDEO DE ~10 MIN</div>
+		<div class="pr-defs-grid">
+			{
+				tiers.map((t) => (
+					<div class="pr-def">
+						<div class="pr-def-head">
+							<span class="pr-dot" style={`background:${t.color}`} />
+							{t.name}
+						</div>
+						<div class="pr-def-desc">{t.desc}</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+
+	<!-- Paneles de precios -->
+	<div class="pr-panels">
+		<div class="pr-panel" data-reveal="left">
+			<div class="pr-panel-head">
+				<span class="pr-panel-title">FORMATO VERTICAL</span>
+				<span class="pr-panel-sub">POR VIDEO</span>
+			</div>
+			{
+				vertical.map((r) => (
+					<div class="pr-row">
+						<span class="pr-row-name">
+							<span class="pr-dot" style={`background:${r.color}`} />
+							Edición {r.name}
+						</span>
+						<span class="pr-row-price">{r.price}</span>
+					</div>
+				))
+			}
+		</div>
+
+		<div class="pr-panel" data-reveal="right" style="--reveal-delay:.08s;">
+			<div class="pr-panel-head">
+				<span class="pr-panel-title">FORMATO HORIZONTAL</span>
+				<span class="pr-panel-sub">POR 10 MIN · POR MINUTO</span>
+			</div>
+			{
+				horizontal.map((r) => (
+					<div class="pr-row">
+						<span class="pr-row-name">
+							<span class="pr-dot" style={`background:${r.color}`} />
+							Edición {r.name}
+						</span>
+						<span class="pr-row-price">
+							{r.per10}
+							<span class="pr-row-permin"> · {r.perMin}/min</span>
+						</span>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<style>
+	#precios .pr-note {
+		font-weight: 300;
+		font-size: 14px;
+		line-height: 1.6;
+		color: #a8a6a0;
+		max-width: 640px;
+		margin: 0 0 30px;
+	}
+	#precios .pr-note b {
+		color: #e6e4de;
+		font-weight: 600;
+	}
+
+	#precios .pr-defs {
+		margin-bottom: 30px;
+	}
+	#precios .pr-defs-label {
+		font-family: 'Space Mono', monospace;
+		font-size: 10px;
+		letter-spacing: 2px;
+		color: #86847f;
+		margin-bottom: 14px;
+	}
+	#precios .pr-defs-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 18px;
+	}
+	#precios .pr-def {
+		border-top: 1px solid rgba(255, 255, 255, 0.14);
+		padding-top: 12px;
+	}
+	#precios .pr-def-head {
+		display: flex;
+		align-items: center;
+		gap: 9px;
+		font-weight: 600;
+		font-size: 15px;
+		letter-spacing: 0.4px;
+		color: #f0eee8;
+		margin-bottom: 6px;
+	}
+	#precios .pr-def-desc {
+		font-weight: 300;
+		font-size: 13px;
+		line-height: 1.45;
+		color: #9a988f;
+	}
+	#precios .pr-dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		flex: none;
+	}
+
+	#precios .pr-panels {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+	#precios .pr-panel {
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: #0e0e0f;
+		padding: 20px 24px 8px;
+		transition:
+			transform 0.3s ease,
+			border-color 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	#precios .pr-panel:hover {
+		transform: translateY(-4px);
+		border-color: rgba(255, 255, 255, 0.3);
+		box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+	}
+	#precios .pr-panel-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 10px;
+		padding-bottom: 14px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	#precios .pr-panel-title {
+		font-weight: 600;
+		font-size: 16px;
+		letter-spacing: 1px;
+		color: #f0eee8;
+		white-space: nowrap;
+	}
+	#precios .pr-panel-sub {
+		font-family: 'Space Mono', monospace;
+		font-size: 9px;
+		letter-spacing: 1.5px;
+		color: #86847f;
+		text-align: right;
+	}
+	#precios .pr-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 13px 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+	}
+	#precios .pr-row:last-child {
+		border-bottom: 0;
+	}
+	#precios .pr-row-name {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-weight: 500;
+		font-size: 14px;
+		letter-spacing: 0.3px;
+		color: #d8d6d0;
+	}
+	#precios .pr-row-price {
+		font-weight: 700;
+		font-size: 19px;
+		letter-spacing: 0.5px;
+		color: #f0eee8;
+		white-space: nowrap;
+	}
+	#precios .pr-row-permin {
+		font-family: 'Space Mono', monospace;
+		font-weight: 400;
+		font-size: 11px;
+		color: #86847f;
+	}
+
+	@media (max-width: 720px) {
+		#precios .pr-defs-grid,
+		#precios .pr-panels {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import VerticalVideos from '../components/VerticalVideos.astro';
+import Reel from '../components/Reel.astro';
+import SobreMi from '../components/SobreMi.astro';
+import Precios from '../components/Precios.astro';
+import Contacto from '../components/Contacto.astro';
+---
+
+<Layout>
+	<Header />
+	<div
+		style="width:1024px;margin:0 auto;position:relative;color:#e6e4de;font-family:'Oswald',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;padding-top:78px;"
+	>
+		<Hero />
+
+		<!-- contenedor de contenido -->
+		<div style="padding:0 104px 0 96px;">
+			<VerticalVideos />
+			<Reel />
+			<SobreMi />
+			<Precios />
+			<Contacto />
+		</div>
+	</div>
+</Layout>
+
+<script>
+	// Marca el enlace de navegación según la sección visible (scroll-spy).
+	const navLinks = Array.from(
+		document.querySelectorAll<HTMLAnchorElement>('.nav-link')
+	);
+	const sectionIds = ['inicio', 'vertical', 'reel', 'sobre', 'precios', 'contacto'];
+	const linkFor = (id: string) =>
+		navLinks.find((a) => a.getAttribute('href') === '#' + id);
+
+	const spy = new IntersectionObserver(
+		(entries) => {
+			for (const e of entries) {
+				if (e.isIntersecting) {
+					navLinks.forEach((a) => a.classList.remove('active'));
+					linkFor((e.target as HTMLElement).id)?.classList.add('active');
+				}
+			}
+		},
+		{ rootMargin: '-45% 0px -50% 0px' }
+	);
+
+	sectionIds.forEach((id) => {
+		const el = document.getElementById(id);
+		if (el) spy.observe(el);
+	});
+
+	// Revela cada elemento [data-reveal] al entrar en pantalla (una sola vez).
+	const reveal = new IntersectionObserver(
+		(entries) => {
+			for (const e of entries) {
+				if (e.isIntersecting) {
+					const el = e.target as HTMLElement;
+					el.classList.add('is-visible');
+					reveal.unobserve(el);
+					// Tras completar el reveal, quita el atributo: así su transición de
+					// 0.7s no pisa otras (p. ej. el hover translateX de .contact-link).
+					setTimeout(() => el.removeAttribute('data-reveal'), 1400);
+				}
+			}
+		},
+		{ threshold: 0.12 }
+	);
+
+	document.querySelectorAll('[data-reveal]').forEach((el) => reveal.observe(el));
+</script>

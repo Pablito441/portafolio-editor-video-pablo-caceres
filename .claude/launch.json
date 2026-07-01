@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portafolio-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "C:/Users/pablo/Desktop/Portafolio-Caceres_Pablo/portafolio-pablo",
+      "port": 4321
+    }
+  ]
+}

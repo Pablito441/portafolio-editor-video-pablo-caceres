@@ -1,0 +1,187 @@
+---
+// 03. Sobre mí — retrato, texto y áreas de trabajo (lo que hago).
+import TypeIn from './TypeIn.tsx';
+
+const services = [
+	{ label: 'Edición', icon: 'edit' },
+	{ label: 'Grabación', icon: 'camera' },
+	{ label: 'Miniaturas', icon: 'image' },
+	{ label: 'Intros', icon: 'bolt' },
+	{ label: 'Motion graphics', icon: 'motion' },
+];
+---
+
+<div id="sobre" style="position:relative;margin-top:62px;">
+	<div style="display:flex;align-items:center;gap:22px;margin-bottom:30px;">
+		<TypeIn
+			client:visible
+			text="03. SOBRE MÍ"
+			style="margin:0;font-weight:600;font-size:25px;letter-spacing:1px;white-space:nowrap;"
+		/>
+		<span style="flex:1;height:1px;background:rgba(255,255,255,.22);"></span>
+		<span style="width:26px;height:9px;border:1px solid rgba(255,255,255,.4);position:relative;"
+			><span
+				style="position:absolute;right:-4px;top:1px;width:2px;height:5px;background:rgba(255,255,255,.4);"
+			></span></span
+		>
+	</div>
+
+	<div style="display:flex;gap:36px;align-items:flex-start;">
+		<img
+			class="sm-portrait"
+			src="/images/sobre-mi.png"
+			alt="Retrato de Pablo Cáceres"
+			data-reveal="left"
+			style="width:330px;flex:none;margin-top:6px;"
+		/>
+
+		<div data-reveal="up" style="flex:1;max-width:280px;--reveal-delay:.12s;">
+			<p
+				style="font-weight:400;font-size:14px;line-height:1.55;color:#cbc9c3;margin:0 0 16px;"
+			>
+				Soy Pablo Cáceres, editor de video y filmmaker: grabo y edito.
+			</p>
+			<p
+				style="font-weight:300;font-size:14px;line-height:1.55;color:#a8a6a0;margin:0 0 16px;"
+			>
+				Edito videos largos y directos enteros de Twitch o Kick —
+				desde el VOD resubido, con el material que me pases, o editando cámara y
+				gameplay por separado. También hago intros, outros y miniaturas para videos horizontales o verticales.
+			</p>
+			<p
+				style="font-weight:300;font-size:14px;line-height:1.55;color:#a8a6a0;margin:0 0 26px;"
+			>
+				Trabajo con Premiere Pro, Photoshop y CapCut, con nociones de
+				motion graphics. Cada proyecto se cotiza según el material y el alcance.
+			</p>
+			{/* Botón "Conoce más" desactivado por ahora. Para reactivarlo, borrá esta línea y la de cierre del comentario.
+			<a
+				href="#contacto"
+				class="dc-btn"
+				style="display:inline-flex;align-items:center;gap:30px;padding:14px 22px;font-weight:600;font-size:13px;letter-spacing:2px;"
+				>CONOCE MÁS
+				<svg width="30" height="10" viewBox="0 0 30 10" fill="none"
+					><line x1="0" y1="5" x2="26" y2="5" stroke="#f0eee8" stroke-width="1"
+					></line><polyline points="21,1 26,5 21,9" stroke="#f0eee8" stroke-width="1" fill="none"
+					></polyline></svg
+				>
+			</a>
+			*/}
+		</div>
+
+		<div class="sm-services" data-reveal="right" style="flex:none;width:200px;margin-top:4px;--reveal-delay:.22s;">
+			<div class="sm-services-title">LO QUE HAGO</div>
+			{
+				services.map((s) => (
+					<div class="sm-service">
+						<span class="sm-service-ico">
+							{s.icon === 'edit' && (
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="6" cy="6" r="2.5" />
+									<circle cx="6" cy="18" r="2.5" />
+									<line x1="8.1" y1="7.6" x2="20" y2="18" />
+									<line x1="8.1" y1="16.4" x2="20" y2="6" />
+								</svg>
+							)}
+							{s.icon === 'camera' && (
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+									<rect x="3" y="7" width="12" height="10" rx="2" />
+									<path d="M15 10.5l6-3v9l-6-3z" />
+								</svg>
+							)}
+							{s.icon === 'image' && (
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+									<rect x="3" y="4" width="18" height="16" rx="2" />
+									<circle cx="8.5" cy="9.5" r="1.6" />
+									<path d="M4 17l5-5 4 4 3-2 4 3" />
+								</svg>
+							)}
+							{s.icon === 'bolt' && (
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+									<path d="M13 2L4.5 13H11l-1 9 8.5-11H12z" />
+								</svg>
+							)}
+							{s.icon === 'motion' && (
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M5 19L14 10" />
+									<path d="M14.5 3.5l1.1 2.4 2.4 1.1-2.4 1.1-1.1 2.4-1.1-2.4-2.4-1.1 2.4-1.1z" />
+									<path d="M19 13l.7 1.5 1.5.7-1.5.7-.7 1.5-.7-1.5-1.5-.7 1.5-.7z" />
+								</svg>
+							)}
+						</span>
+						<span class="sm-service-label">{s.label}</span>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<style>
+	/* Retrato: pequeña animación de escala al hover (como el collage del hero). */
+	.sm-portrait {
+		transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+		cursor: pointer;
+	}
+	.sm-portrait:hover {
+		transform: scale(1.03);
+	}
+	.sm-services {
+		display: flex;
+		flex-direction: column;
+	}
+	.sm-services-title {
+		font-family: 'Space Mono', monospace;
+		font-size: 10px;
+		letter-spacing: 2px;
+		color: #86847f;
+		margin-bottom: 12px;
+	}
+	.sm-service {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 0;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		transition: transform 0.25s ease;
+	}
+	.sm-service:last-child {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	}
+	.sm-service-ico {
+		flex: none;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		color: #d8d6d0;
+		transition:
+			border-color 0.25s ease,
+			color 0.25s ease,
+			background-color 0.25s ease;
+	}
+	.sm-service-ico svg {
+		width: 17px;
+		height: 17px;
+	}
+	.sm-service-label {
+		font-weight: 500;
+		font-size: 14px;
+		letter-spacing: 0.5px;
+		color: #cbc9c3;
+		transition: color 0.25s ease;
+	}
+	.sm-service:hover {
+		transform: translateX(3px);
+	}
+	.sm-service:hover .sm-service-ico {
+		border-color: #cf2e2e;
+		color: #cf2e2e;
+		background: rgba(207, 46, 46, 0.1);
+	}
+	.sm-service:hover .sm-service-label {
+		color: #f0eee8;
+	}
+</style>
