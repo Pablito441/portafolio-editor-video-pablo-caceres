@@ -129,7 +129,7 @@ export default function HeroContent() {
               color: "#eceae4",
             }}
           >
-            DOY RITMO A TUS IDEAS
+            YOUTUBE, REELS, SHORTS y TIKTOKS
           </span>
         </motion.div>
 
@@ -145,8 +145,9 @@ export default function HeroContent() {
             margin: "0 0 26px",
           }}
         >
-          Transformo ideas en contenido visual que conecta, impacta y deja
-          huella. Edición con intención. Narrativa con estilo.
+          Videos dinámicos, claros y con ritmo, diseñados para captar la
+          atención, aumentar la retención y mantener al espectador mirando hasta
+          el final.
         </motion.p>
 
         {/* CTA + chips — desde ABAJO; los chips entran uno a uno (escala) */}
@@ -189,7 +190,9 @@ export default function HeroContent() {
             style={{ display: "flex", gap: 10 }}
             variants={{
               hidden: {},
-              show: { transition: { staggerChildren: 0.08, delayChildren: 0.62 } },
+              show: {
+                transition: { staggerChildren: 0.08, delayChildren: 0.62 },
+              },
             }}
             initial="hidden"
             animate="show"
