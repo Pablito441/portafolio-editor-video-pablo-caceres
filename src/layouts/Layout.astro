@@ -136,8 +136,10 @@ const { title = 'Pablo Cáceres — Editor & Filmmaker' } = Astro.props;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		/* el lift/scale del hover lo maneja Framer Motion (whileHover); acá sólo la sombra */
-		transition: box-shadow 0.25s ease;
+		/* lift/scale del hover ahora en CSS (antes lo hacía Framer Motion) */
+		transition:
+			transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+			box-shadow 0.25s ease;
 	}
 	.tool-chip img {
 		width: 100%;
@@ -146,6 +148,7 @@ const { title = 'Pablo Cáceres — Editor & Filmmaker' } = Astro.props;
 		display: block;
 	}
 	.tool-chip:hover {
+		transform: scale(1.16) translateY(-4px);
 		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
 	}
 
