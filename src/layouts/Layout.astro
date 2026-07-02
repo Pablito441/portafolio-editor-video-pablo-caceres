@@ -1,9 +1,19 @@
 ---
 interface Props {
 	title?: string;
+	description?: string;
 }
 
-const { title = 'Pablo Cáceres — Editor & Filmmaker' } = Astro.props;
+const {
+	title = 'Pablo Cáceres — Editor & Filmmaker',
+	description = 'Editor de video y filmmaker. Videos dinámicos con ritmo para YouTube, Reels, Shorts y TikToks: edición, grabación, miniaturas y motion graphics.',
+} = Astro.props;
+
+// URL absoluta del sitio (definida en astro.config → `site`). Necesaria para que
+// la miniatura de los enlaces (Open Graph) funcione en WhatsApp, X, Telegram, etc.
+const site = Astro.site ?? new URL('http://localhost:4321');
+const ogImage = new URL('/og.jpg', site).href;
+const canonical = new URL(Astro.url.pathname, site).href;
 ---
 
 <!doctype html>
@@ -15,6 +25,26 @@ const { title = 'Pablo Cáceres — Editor & Filmmaker' } = Astro.props;
 		<link rel="alternate icon" href="/favicon.ico?v=2" sizes="any" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+
+		<!-- Open Graph: miniatura de enlace en WhatsApp, Facebook, LinkedIn, Telegram… -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Pablo Cáceres" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="Pablo Cáceres — Editor de video & Filmmaker" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content="es_ES" />
+
+		<!-- Twitter / X -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
 		<script is:inline>document.documentElement.classList.add('js');</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

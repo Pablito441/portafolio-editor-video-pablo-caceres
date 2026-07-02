@@ -5,6 +5,9 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
+  // URL pública del sitio en Vercel (necesaria para que la miniatura de los
+  // enlaces —Open Graph— apunte a una imagen absoluta en WhatsApp / X / etc.).
+  site: 'https://kcrs-editor-filmmaker.vercel.app',
   integrations: [react()],
   vite: {
     optimizeDeps: {
