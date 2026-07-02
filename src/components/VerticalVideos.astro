@@ -895,6 +895,29 @@ const groups = [
 			right: 4px;
 		}
 	}
+
+	/* ===== Responsive: coverflow ===== */
+	@media (max-width: 900px) {
+		/* flechas hacia adentro (el contenedor recorta el desborde lateral) */
+		.vt-nav.prev {
+			left: 0;
+		}
+		.vt-nav.next {
+			right: 0;
+		}
+	}
+	@media (max-width: 640px) {
+		.vt-coverflow {
+			height: 320px;
+		}
+		.vt-card {
+			width: 168px;
+		}
+		.vt-nav {
+			width: 28px;
+			height: 48px;
+		}
+	}
 </style>
 
 <!-- Estilos GLOBALes de los botones de red social del modal: se inyectan en runtime,

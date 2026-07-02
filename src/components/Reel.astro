@@ -281,4 +281,47 @@ const groups: { key: string; label: string; items: Vid[] }[] = [
 			transition: none;
 		}
 	}
+
+	/* ===== Responsive: alto de fila fluido para mantener 16:9 en cada ancho =====
+	   rowH = anchoColumna × 9/16, con anchoColumna = (anchoMosaico − 2·gap) / 3.
+	   El anchoMosaico = anchoContenedor − padding lateral del bloque de contenido. */
+	@media (max-width: 1023px) {
+		#reel .reel-mosaic {
+			grid-auto-rows: calc((min(100vw, 1024px) - 200px - 20px) / 3 * 9 / 16);
+		}
+	}
+	@media (max-width: 860px) {
+		#reel .reel-mosaic {
+			grid-auto-rows: calc((100vw - 80px - 20px) / 3 * 9 / 16);
+		}
+		/* flechas hacia adentro (el contenedor recorta el desborde lateral) */
+		#reel .reel-nav.prev {
+			left: 2px;
+		}
+		#reel .reel-nav.next {
+			right: 2px;
+		}
+	}
+	@media (max-width: 640px) {
+		#reel .reel-mosaic {
+			grid-auto-rows: calc((100vw - 36px - 20px) / 3 * 9 / 16);
+			gap: 6px;
+		}
+		#reel .reel-mosaic[data-count='6'],
+		#reel .reel-mosaic[data-count='3'] {
+			grid-auto-rows: calc((100vw - 36px - 12px) / 3 * 9 / 16);
+		}
+		#reel .reel-nav {
+			width: 28px;
+			height: 48px;
+		}
+		#reel .reel-tile.is-main .reel-ttitle {
+			font-size: 13px;
+			padding: 20px 9px 8px;
+		}
+		#reel .reel-ttitle {
+			font-size: 10px;
+			padding: 16px 8px 7px;
+		}
+	}
 </style>

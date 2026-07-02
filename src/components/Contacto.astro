@@ -50,8 +50,8 @@ const contacts = [
 		<span style="flex:1;height:1px;background:rgba(255,255,255,.22);"></span>
 	</div>
 
-	<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:30px;">
-		<div data-reveal="left" style="flex:none;">
+	<div class="contact-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:30px;">
+		<div class="contact-head" data-reveal="left" style="flex:none;">
 			<h3
 				style="margin:0 0 16px;font-weight:600;font-size:30px;line-height:1.02;letter-spacing:.5px;color:#f0eee8;"
 			>
@@ -62,7 +62,7 @@ const contacts = [
 			</p>
 		</div>
 
-		<div style="flex:1;display:flex;gap:54px;padding-top:4px;">
+		<div class="contact-cols" style="flex:1;display:flex;gap:54px;padding-top:4px;">
 			<div style="display:flex;flex-direction:column;gap:22px;">
 				{
 					contacts
@@ -176,3 +176,21 @@ const contacts = [
 		*/}
 	</div>
 </div>
+
+<style>
+	/* ===== Mobile: encabezado y columnas de contacto apiladas ===== */
+	@media (max-width: 760px) {
+		.contact-row {
+			flex-direction: column !important;
+			gap: 30px !important;
+		}
+		.contact-head h3 {
+			font-size: 26px !important;
+		}
+		.contact-cols {
+			flex-direction: column !important;
+			gap: 22px !important;
+			padding-top: 0 !important;
+		}
+	}
+</style>

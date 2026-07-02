@@ -11,13 +11,11 @@ import Contacto from '../components/Contacto.astro';
 
 <Layout>
 	<Header />
-	<div
-		style="width:1024px;margin:0 auto;position:relative;color:#e6e4de;font-family:'Oswald',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;padding-top:78px;"
-	>
+	<div class="site-container">
 		<Hero />
 
 		<!-- contenedor de contenido -->
-		<div style="padding:0 104px 0 96px;">
+		<div class="content-pad">
 			<VerticalVideos />
 			<Reel />
 			<SobreMi />
@@ -26,6 +24,37 @@ import Contacto from '../components/Contacto.astro';
 		</div>
 	</div>
 </Layout>
+
+<style>
+	.site-container {
+		width: 1024px;
+		max-width: 100%; /* fluido en pantallas < 1024px */
+		margin: 0 auto;
+		position: relative;
+		color: #e6e4de;
+		font-family: 'Oswald', sans-serif;
+		-webkit-font-smoothing: antialiased;
+		overflow: hidden;
+		padding-top: 78px;
+	}
+	/* padding lateral del bloque de secciones (bajo el hero) */
+	.content-pad {
+		padding: 0 104px 0 96px;
+	}
+	@media (max-width: 860px) {
+		.content-pad {
+			padding: 0 40px;
+		}
+	}
+	@media (max-width: 640px) {
+		.site-container {
+			padding-top: 62px;
+		}
+		.content-pad {
+			padding: 0 18px;
+		}
+	}
+</style>
 
 <script>
 	// Marca el enlace de navegación según la sección visible (scroll-spy).

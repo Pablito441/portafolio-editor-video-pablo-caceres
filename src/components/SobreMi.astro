@@ -26,7 +26,7 @@ const services = [
 		>
 	</div>
 
-	<div style="display:flex;gap:36px;align-items:flex-start;">
+	<div class="sm-row" style="display:flex;gap:36px;align-items:flex-start;">
 		<img
 			class="sm-portrait"
 			src="/images/sobre-mi.png"
@@ -35,7 +35,7 @@ const services = [
 			style="width:330px;flex:none;margin-top:6px;"
 		/>
 
-		<div data-reveal="up" style="flex:1;max-width:280px;--reveal-delay:.12s;">
+		<div class="sm-bio" data-reveal="up" style="flex:1;max-width:280px;--reveal-delay:.12s;">
 			<p
 				style="font-weight:400;font-size:14px;line-height:1.55;color:#cbc9c3;margin:0 0 16px;"
 			>
@@ -183,5 +183,24 @@ const services = [
 	}
 	.sm-service:hover .sm-service-label {
 		color: #f0eee8;
+	}
+
+	/* ===== Mobile: retrato / texto / servicios en columna ===== */
+	@media (max-width: 760px) {
+		.sm-row {
+			flex-direction: column !important;
+			gap: 26px !important;
+		}
+		.sm-portrait {
+			width: 100% !important;
+			max-width: 360px;
+			margin-top: 0 !important;
+		}
+		.sm-bio {
+			max-width: none !important;
+		}
+		.sm-services {
+			width: 100% !important;
+		}
 	}
 </style>
