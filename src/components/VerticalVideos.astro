@@ -7,7 +7,7 @@
 import VerticalGallery from './VerticalGallery.tsx';
 import TypeIn from './TypeIn.tsx';
 
-type Cat = 'gaming' | 'dance';
+type Cat = 'gaming' | 'dance' | 'informativos';
 type Tier = 'compleja' | 'intermedia' | 'basica'; // nivel de edición
 type Platform = 'youtube' | 'tiktok' | 'instagram';
 interface Link {
@@ -23,6 +23,7 @@ interface Vid {
 	tier?: Tier; // nivel de edición (se asigna desde tierBySlug)
 	summary?: string; // formato / tipo de edición (una línea)
 	details?: string[]; // qué incluye la edición (técnicas, orden homogéneo)
+	coming?: boolean; // tarjeta "Próximamente" (placeholder, sin vídeo real)
 	links: Link[];
 }
 
@@ -382,9 +383,19 @@ const tierBySlug: Record<string, Tier> = {
 const withTier: Vid[] = videos.map((v) => ({ ...v, tier: tierBySlug[v.slug] }));
 const gaming = withTier.filter((v) => v.cat === 'gaming');
 const dance = withTier.filter((v) => v.cat === 'dance');
+
+// Informativos: por ahora un único vídeo real, centrado, con una tarjeta
+// "Próximamente" a cada lado. (Para cambiar el título editá `title` acá abajo.)
+const informativos: Vid[] = [
+	{ slug: 'informativo-1', title: 'Video informativo', cat: 'informativos', links: [] },
+	{ slug: 'proximamente-1', title: 'Próximamente', cat: 'informativos', coming: true, links: [] },
+	{ slug: 'proximamente-2', title: 'Próximamente', cat: 'informativos', coming: true, links: [] },
+];
+
 const groups = [
 	{ key: 'gaming' as Cat, label: 'GAMING', items: gaming },
 	{ key: 'dance' as Cat, label: 'DANCE', items: dance },
+	{ key: 'informativos' as Cat, label: 'INFORMATIVOS', items: informativos },
 ];
 ---
 
@@ -894,6 +905,50 @@ const groups = [
 		.vt-modal-nav.next {
 			right: 4px;
 		}
+	}
+
+	/* ===== Categoría "Informativos" (acento azul) ===== */
+	.vt-dot.cat-informativos {
+		background: #2f9fd0;
+	}
+	.vt-thumb.cat-informativos::after {
+		background: #2f9fd0;
+	}
+	.vt-modal-cat.cat-informativos {
+		background: rgba(47, 159, 208, 0.85);
+	}
+	.vt-modal-details.cat-informativos li::before {
+		background: #2f9fd0;
+	}
+
+	/* ===== Tarjeta "Próximamente" (placeholder, no reproducible) ===== */
+	.vt-card.is-coming {
+		cursor: default;
+		box-shadow: none;
+	}
+	.vt-thumb-coming {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 9 / 16;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #0d0d0e;
+		border: 1px dashed rgba(255, 255, 255, 0.16);
+	}
+	.vt-coming {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
+		color: #6f6d68;
+		text-align: center;
+	}
+	.vt-coming span {
+		font-family: 'Space Mono', monospace;
+		font-size: 11px;
+		letter-spacing: 2px;
 	}
 
 	/* ===== Responsive: coverflow ===== */

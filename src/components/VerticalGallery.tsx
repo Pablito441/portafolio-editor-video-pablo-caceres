@@ -16,7 +16,7 @@ import {
 	type AnimationPlaybackControls,
 } from 'framer-motion';
 
-type Cat = 'gaming' | 'dance';
+type Cat = 'gaming' | 'dance' | 'informativos';
 type Tier = 'compleja' | 'intermedia' | 'basica';
 type Platform = 'youtube' | 'tiktok' | 'instagram';
 interface Link {
@@ -32,6 +32,7 @@ interface Vid {
 	tier?: Tier;
 	summary?: string;
 	details?: string[];
+	coming?: boolean;
 	links: Link[];
 }
 interface Group {
@@ -137,40 +138,65 @@ function Card({
 	return (
 		<motion.button
 			type="button"
-			className={`vt-card${focus ? ' is-focus' : ''}`}
+			className={`vt-card${focus ? ' is-focus' : ''}${item.coming ? ' is-coming' : ''}`}
 			data-index={index}
-			aria-label={`Ver: ${item.title}`}
+			aria-label={item.coming ? 'Próximamente' : `Ver: ${item.title}`}
 			style={{ transform, opacity, zIndex, pointerEvents: visible }}
 			onClick={() => {
+				if (item.coming) {
+					if (!focus) onCenter(index);
+					return;
+				}
 				if (focus) onOpen(item);
 				else onCenter(index);
 			}}
 		>
-			<motion.div
-				className={`vt-thumb cat-${item.cat}`}
-				whileHover={focus ? { y: -10, scale: 1.05 } : {}}
-				transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-			>
-				<img
-					src={`/images/posters/${item.slug}.webp`}
-					alt={item.title}
-					loading="lazy"
-					decoding="async"
-					draggable={false}
-				/>
-				{item.tier ? (
-					<span className={`vt-tier-tag tier-${item.tier}`} aria-hidden="true">
-						{tierLabel[item.tier]}
-					</span>
-				) : null}
-				<span className="vt-play" aria-hidden="true">
-					<PlayIcon />
-				</span>
-				<div className="vt-meta">
-					<div className="vt-title">{item.title}</div>
-					{item.views ? <div className="vt-views">▶ {item.views} views</div> : null}
+			{item.coming ? (
+				<div className="vt-thumb vt-thumb-coming">
+					<div className="vt-coming">
+						<svg
+							width="34"
+							height="34"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.5"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<circle cx="12" cy="12" r="9" />
+							<path d="M12 7.5V12l3 2" />
+						</svg>
+						<span>PRÓXIMAMENTE</span>
+					</div>
 				</div>
-			</motion.div>
+			) : (
+				<motion.div
+					className={`vt-thumb cat-${item.cat}`}
+					whileHover={focus ? { y: -10, scale: 1.05 } : {}}
+					transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+				>
+					<img
+						src={`/images/posters/${item.slug}.webp`}
+						alt={item.title}
+						loading="lazy"
+						decoding="async"
+						draggable={false}
+					/>
+					{item.tier ? (
+						<span className={`vt-tier-tag tier-${item.tier}`} aria-hidden="true">
+							{tierLabel[item.tier]}
+						</span>
+					) : null}
+					<span className="vt-play" aria-hidden="true">
+						<PlayIcon />
+					</span>
+					<div className="vt-meta">
+						<div className="vt-title">{item.title}</div>
+						{item.views ? <div className="vt-views">▶ {item.views} views</div> : null}
+					</div>
+				</motion.div>
+			)}
 		</motion.button>
 	);
 }
@@ -373,7 +399,7 @@ function Modal({
 				</div>
 				<div className="vt-modal-side" ref={sideRef} onScroll={onSideScroll}>
 					<div className="vt-modal-tags">
-						<div className={`vt-modal-cat cat-${vid.cat}`}>{vid.cat === 'gaming' ? 'GAMING' : 'DANCE'}</div>
+						<div className={`vt-modal-cat cat-${vid.cat}`}>{vid.cat === 'gaming' ? 'GAMING' : vid.cat === 'dance' ? 'DANCE' : 'INFORMATIVOS'}</div>
 						{vid.tier ? <div className={`vt-modal-tier tier-${vid.tier}`}>{tierLabel[vid.tier]}</div> : null}
 					</div>
 					<h3 className="vt-modal-title">{vid.title}</h3>
@@ -389,7 +415,7 @@ function Modal({
 							</ul>
 						</>
 					) : null}
-					<div className="vt-modal-links-label">MIRALO EN SU PLATAFORMA</div>
+					{vid.links.length > 0 ? <div className="vt-modal-links-label">MIRALO EN SU PLATAFORMA</div> : null}
 					<div className="vt-modal-links" id="vt-modal-links">
 						{vid.links.map((l, i) => (
 							<a key={i} href={l.url} target="_blank" rel="noopener noreferrer" className={`vt-link plat-${l.platform}`}>
@@ -417,8 +443,10 @@ export default function VerticalGallery({ groups }: { groups: Group[] }) {
 	const neighbor = (cur: Vid, dir: 1 | -1): Vid => {
 		const g = groups.find((gr) => gr.items.some((it) => it.slug === cur.slug));
 		if (!g) return cur;
-		const i = g.items.findIndex((it) => it.slug === cur.slug);
-		return g.items[(i + dir + g.items.length) % g.items.length];
+		// Sólo se navega entre vídeos reales (se saltan las tarjetas "Próximamente").
+		const real = g.items.filter((it) => !it.coming);
+		const i = real.findIndex((it) => it.slug === cur.slug);
+		return real[(i + dir + real.length) % real.length];
 	};
 
 	useEffect(() => {
@@ -448,7 +476,7 @@ export default function VerticalGallery({ groups }: { groups: Group[] }) {
 					<div className="vt-group-head">
 						<span className={`vt-dot cat-${g.key}`} />
 						{g.label}
-						<span className="vt-count">{g.items.length}</span>
+						<span className="vt-count">{g.items.filter((it) => !it.coming).length}</span>
 					</div>
 					<Coverflow group={g} onOpen={setActive} />
 				</div>
