@@ -384,12 +384,14 @@ const withTier: Vid[] = videos.map((v) => ({ ...v, tier: tierBySlug[v.slug] }));
 const gaming = withTier.filter((v) => v.cat === 'gaming');
 const dance = withTier.filter((v) => v.cat === 'dance');
 
-// Informativos: por ahora un único vídeo real, centrado, con una tarjeta
-// "Próximamente" a cada lado. (Para cambiar el título editá `title` acá abajo.)
+// Informativos. Para sumar más vídeos: copiá el .mp4 a public/videos, su póster a
+// public/images/posters (mismo `slug`) y agregá una línea acá. Se puede volver a
+// poner una tarjeta "Próximamente" con `coming: true` (sin vídeo ni póster real).
 const informativos: Vid[] = [
 	{ slug: 'informativo-1', title: 'Video informativo', cat: 'informativos', links: [] },
-	{ slug: 'proximamente-1', title: 'Próximamente', cat: 'informativos', coming: true, links: [] },
-	{ slug: 'proximamente-2', title: 'Próximamente', cat: 'informativos', coming: true, links: [] },
+	{ slug: 'presentacion-dr-hermes', title: 'Presentación · Dr. Hermes', cat: 'informativos', links: [] },
+	{ slug: '3-senales-relleno', title: '3 señales para no usar más relleno', cat: 'informativos', links: [] },
+	{ slug: 'cobertura-seguro-medico', title: 'Cobertura de Seguro Médico', cat: 'informativos', links: [] },
 ];
 
 const groups = [
